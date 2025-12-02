@@ -8,16 +8,45 @@ import WeeklyLeaderboard from '@/components/WeeklyLeaderboard'
 import HallOfFame from '@/components/HallOfFame'
 
 export default function Home() {
+  // Test users provided for local testing
+  const testUsers = [
+    { id: '4e212ece-95b5-4280-aebf-05870cffeb8d', name: 'adam_photo' },
+    { id: '3ad4720e-d872-4016-805a-8caafb0d269f', name: 'ella_lens' },
+    { id: '1f7e738b-315b-41e9-9dc4-80f8b01dcda8', name: 'jenny_captures' },
+  ]
+
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [userId, setUserId] = useState<string>('demo-user') // Replace with auth
+  const [userId, setUserId] = useState<string>(testUsers[0].id) // Replace with auth in production
   const [refreshPhotos, setRefreshPhotos] = useState(0)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <h1 className="text-3xl font-bold text-blue-600">📸 ShareSnap</h1>
-          <p className="text-gray-600 text-sm">Compete, Share & Celebrate</p>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <h1 className="text-3xl font-bold text-blue-600">📸 ShareSnap</h1>
+              <p className="text-gray-600 text-sm">Compete, Share & Celebrate</p>
+            </div>
+            {/* Test user selector */}
+            <div className="flex items-center gap-2">
+              <label htmlFor="user-select" className="text-sm text-gray-600">
+                Testing as:
+              </label>
+              <select
+                id="user-select"
+                className="border rounded px-2 py-1 text-sm"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+              >
+                {testUsers.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </header>
 
