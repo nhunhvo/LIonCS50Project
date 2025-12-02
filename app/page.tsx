@@ -1,66 +1,98 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+
+import { useState } from 'react'
+import CategoryList from '@/components/CategoryList'
+import PhotoGallery from '@/components/PhotoGallery'
+import PhotoUpload from '@/components/PhotoUpload'
+import WeeklyLeaderboard from '@/components/WeeklyLeaderboard'
+import HallOfFame from '@/components/HallOfFame'
 
 export default function Home() {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [userId, setUserId] = useState<string>('demo-user') // Replace with auth
+  const [refreshPhotos, setRefreshPhotos] = useState(0)
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <header className="bg-white shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <h1 className="text-3xl font-bold text-blue-600">📸 ShareSnap</h1>
+          <p className="text-gray-600 text-sm">Compete, Share & Celebrate</p>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-20">
+              <CategoryList onCategorySelect={setSelectedCategory} />
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:col-span-3 space-y-6">
+            {!selectedCategory ? (
+              <div className="bg-white rounded-lg shadow-md p-12 text-center">
+                <h2 className="text-4xl font-bold text-gray-800 mb-4">Welcome to ShareSnap</h2>
+                <p className="text-xl text-gray-600 mb-6">
+                  Select a category to browse photos, compete on leaderboards, and see who's winning!
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <p className="text-2xl mb-2">📸</p>
+                    <p className="font-semibold">Upload Photos</p>
+                    <p className="text-sm text-gray-600">Share your best moments in any category</p>
+                  </div>
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <p className="text-2xl mb-2">🏆</p>
+                    <p className="font-semibold">Compete</p>
+                    <p className="text-sm text-gray-600">Race to the top of the weekly leaderboard</p>
+                  </div>
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <p className="text-2xl mb-2">⭐</p>
+                    <p className="font-semibold">Hall of Fame</p>
+                    <p className="text-sm text-gray-600">See the best photos of the month</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Upload Form */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="md:col-span-2">
+                    <PhotoUpload
+                      categoryId={selectedCategory}
+                      userId={userId}
+                      onPhotoUploaded={() => setRefreshPhotos((p) => p + 1)}
+                    />
+                  </div>
+                  <div>
+                    <button
+                      onClick={() => setSelectedCategory(null)}
+                      className="w-full bg-gray-500 text-white font-bold py-2 rounded-lg hover:bg-gray-600"
+                    >
+                      ← Back
+                    </button>
+                  </div>
+                </div>
+
+                {/* Leaderboard */}
+                <WeeklyLeaderboard categoryId={selectedCategory} />
+
+                {/* Photos Gallery */}
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold">Recent Photos</h3>
+                  <PhotoGallery key={refreshPhotos} categoryId={selectedCategory} sortBy="recent" />
+                </div>
+
+                {/* Hall of Fame */}
+                <HallOfFame categoryId={selectedCategory} />
+              </>
+            )}
+          </div>
         </div>
       </main>
     </div>
-  );
+  )
 }
